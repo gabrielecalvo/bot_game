@@ -17,12 +17,20 @@ def app():
 
         For example:
         ```python
+        # assuming the file is called `BarelySmart.py`
+        
         def strategy(bot_positions):
-            if len(bot_positions) > 2:
-                action = "sabotage"
+            my_position = bot_positions["BarelySmart"]
+            
+            n_same_position = 0
+            for pos in bot_positions.values():
+                if pos == my_position:
+                    n_same_position += 1
+            
+            if n_same_position > 2:
+                return "sabotage"
             else:
-                action = "walk"
-            return action
+                return "walk"
         ```
         """
     )
