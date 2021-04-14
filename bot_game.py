@@ -44,7 +44,7 @@ class Game:
             self.show_board()
 
     def _play_bot(self, bot):
-        bot_position_dictionary = {b: b.position for b in self.bots}
+        bot_position_dictionary = {b.name: b.position for b in self.bots}
 
         action_str = bot.play(bot_position_dictionary)
         if action_str == "walk":

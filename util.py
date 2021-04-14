@@ -55,3 +55,7 @@ def plot_grand_prix_results(winnings, x_col="Bot", y_col="Races Won"):
 
     fig = px.bar(podium_df, x=x_col, y=y_col, color=y_col)
     return fig
+
+def delete_all_bots():
+    for fp in DOWNLOAD_FOLDER.glob("*.py"):
+        fp.unlink()

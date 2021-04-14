@@ -35,3 +35,7 @@ def app():
             "File uploaded and validated successfully, "
             "go to `Race Page` to run the Game"
         )
+
+    competitors = util.build_all_bots()
+    formatted_competitors = "\n".join([f"\t- {c}" for c in competitors])
+    st.markdown(f"### Current Competitors:\n{formatted_competitors}")
