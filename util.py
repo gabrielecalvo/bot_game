@@ -1,4 +1,5 @@
 import importlib.util
+import shutil
 from pathlib import Path
 from typing import List
 
@@ -7,8 +8,17 @@ import plotly.express as px
 
 from bot_game import Bot
 
+EXAMPLES_FOLDER = Path("examples")
 DOWNLOAD_FOLDER = Path("downloads")
 DOWNLOAD_FOLDER.mkdir(exist_ok=True)
+
+
+def save_code_to_file(code: str, filename: str):
+    fpath = DOWNLOAD_FOLDER / f"{filename}.py"
+    with open(fpath, "w") as fh:
+        fh.write(code)
+
+    return fpath
 
 
 def save_file(filename: str, filebytes: bytes):
@@ -45,6 +55,11 @@ def build_all_bots() -> List[Bot]:
     return bots
 
 
+def add_example_bots():
+    for fp in EXAMPLES_FOLDER.glob("*.py"):
+        shutil.copy(fp, DOWNLOAD_FOLDER / fp.parts[-1])
+
+
 def plot_grand_prix_results(winnings, x_col="Bot", y_col="Races Won"):
     podium_df = (
         pd.Series(winnings, name=y_col)
@@ -55,6 +70,25 @@ def plot_grand_prix_results(winnings, x_col="Bot", y_col="Races Won"):
 
     fig = px.bar(podium_df, x=x_col, y=y_col, color=y_col)
     return fig
+
+
+def create_animation(df):
+    fig = px.scatter(
+        df.assign(
+            size=10,
+        ),
+        x="position",
+        y="name",
+        animation_frame="round",
+        animation_group="name",
+        size="size",
+        color="name",
+        hover_data=["direction", "last_action", "action_order"],
+        hover_name="name",
+        range_x=[0, 10],
+    )
+    return fig
+
 
 def delete_all_bots():
     for fp in DOWNLOAD_FOLDER.glob("*.py"):

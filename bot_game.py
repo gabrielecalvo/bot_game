@@ -1,13 +1,19 @@
 import random
+import pandas as pd
 
 
 class Game:
     n_squares = 10
     winner = None
 
-    def __init__(self, bots, verbose=False):
+    def __init__(self, bots, use_trace=True, verbose=False):
         self.bots = bots
+        self.use_trace = use_trace
         self.verbose = verbose
+
+        if self.use_trace:
+            self.trace_df = pd.DataFrame()
+            self._save_trace()
 
         self._set_starting_positions()
 
@@ -38,15 +44,39 @@ class Game:
             for bot in self.bots:
                 bot.direction = 1
 
+            if self.use_trace:
+                self._save_trace()
+
         if self.verbose:
             if self.winner:
                 print(f"========== Race Over, WINNER: {self.winner} ========== ")
             self.show_board()
 
-    def _play_bot(self, bot):
+    def _save_trace(self):
+        round = 0 if self.trace_df.empty else self.trace_df["round"].max() + 1
+        round_data = []
+
+        for action_order, bot in enumerate(self.bots):
+            round_data.append(
+                {
+                    "round": round,
+                    "name": bot.name,
+                    "position": bot.position,
+                    "direction": bot.direction,
+                    "last_action": bot._last_action if round > 0 else "",
+                    "action_order": action_order,
+                }
+            )
+
+        round_df = pd.DataFrame(round_data)
+        self.trace_df = self.trace_df.append(round_df, ignore_index=True)
+
+    def _play_bot(self, bot: "Bot"):
         bot_position_dictionary = {b.name: b.position for b in self.bots}
 
         action_str = bot.play(bot_position_dictionary)
+        bot._last_action = action_str
+
         if action_str == "walk":
             pos_from, pos_to = bot.walk()
             if self.verbose:
@@ -69,7 +99,7 @@ class Bot:
         self.name = name
 
     def __repr__(self):
-        return f"{self.name}Bot"
+        return f"{self.name}"
 
     def walk(self):
         from_position = self.position
@@ -95,7 +125,7 @@ class Bot:
 def grand_prix(bots, n=1000, prog_bar=None):
     winnings = {b: 0 for b in bots}
     for i in range(n):
-        game = Game(bots, verbose=False)
+        game = Game(bots, use_trace=False, verbose=False)
         while game.winner is None:
             game.play_round()
         winnings[game.winner] += 1
@@ -104,3 +134,13 @@ def grand_prix(bots, n=1000, prog_bar=None):
             prog_bar.progress((i + 1) / n)
 
     return winnings
+
+
+if __name__ == "__main__":
+    b1 = Bot("b1")
+    b2 = Bot("b2")
+    game = Game([b1, b2], use_trace=True, verbose=False)
+    while game.winner is None:
+        game.play_round()
+
+    game.trace_df

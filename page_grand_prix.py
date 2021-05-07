@@ -7,9 +7,9 @@ from bot_game import grand_prix
 def app():
     st.markdown(
         """
-        # Bot Game - Grand Prix
+        # Grand Prix
 
-        **Now it's time to race**!!!
+        **Let the big competition begin**!!!
 
         Select how many races you want to perform and let the grand-prix begin!
         """
@@ -17,7 +17,7 @@ def app():
 
     lcol, rcol = st.beta_columns([2, 1])
     n_races = lcol.number_input(
-        "Number of races: ", min_value=1, max_value=100_000, value=1000
+        "Number of races: ", min_value=1, max_value=10_000, value=100
     )
     rcol.title("")  # just for spacing
 
