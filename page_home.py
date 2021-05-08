@@ -13,7 +13,7 @@ def app():
     In this game you will **code up a strategy** that your Bot will follow to
     try to get to the *end of the race first* (reach **position 10**).
 
-    Each turn a Bot can either of the following *actions**:
+    Each turn a Bot can either of the following **actions**:
     - **walk** :runner:: move forward one position
     - **sabotage** :hammer:: turn other bots currently at the same position 
         as its own so they are facing backwards
